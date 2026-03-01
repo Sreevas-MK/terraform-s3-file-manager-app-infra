@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "zones" {
   description = "AWS region"
   type        = list(string)
-  default = ["ap-south-1b", "ap-south-1a"]
+  default     = ["ap-south-1b", "ap-south-1a"]
 }
 
 

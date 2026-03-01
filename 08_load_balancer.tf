@@ -44,20 +44,6 @@ resource "aws_lb_target_group" "s3_app_tg" {
   }
 }
 
-# Setting up load balancer listeners
-
-resource "aws_lb_listener" "frontend_https_listener" {
-  load_balancer_arn = aws_lb.s3_app_alb.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = data.aws_acm_certificate.existing_cert.arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.s3_app_tg.arn
-  }
-}
 
 resource "aws_lb_listener" "frontend_http_listener" {
 
@@ -66,12 +52,7 @@ resource "aws_lb_listener" "frontend_http_listener" {
   protocol          = "HTTP"
 
   default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.s3_app_tg.arn
   }
 }
