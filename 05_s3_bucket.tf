@@ -1,7 +1,7 @@
 # S3 bucket for Node application
 
 resource "aws_s3_bucket" "s3_node_app" {
-  bucket = var.bucket_name
+  bucket        = var.bucket_name
   force_destroy = true
 
   tags = {
@@ -22,7 +22,7 @@ resource "aws_s3_bucket_versioning" "s3_node_app_versioning" {
 # S3 bucket to collect Application load balancer logs
 
 resource "aws_s3_bucket" "alb_logs" {
-  bucket = "sreevas-alb-access-logs-2026"
+  bucket        = "sreevas-alb-access-logs-2026"
   force_destroy = true
 
   tags = {
@@ -46,7 +46,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "alb_logs_lifecycle" {
 }
 
 resource "aws_s3_bucket" "cloudfront_logs" {
-  bucket = "sreevas-cloudfront-logs-2026"
+  bucket        = "sreevas-cloudfront-logs-2026"
   force_destroy = true
 
   tags = {
