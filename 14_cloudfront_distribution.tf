@@ -2,6 +2,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = ""
+  wait_for_deployment = false
 
   aliases = [var.application_host]
 
@@ -38,6 +39,13 @@ resource "aws_cloudfront_distribution" "cdn" {
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
+
+  logging_config {
+    bucket          = aws_s3_bucket.cloudfront_logs.bucket_regional_domain_name
+    prefix          = "cloudfront-logs/"
+    include_cookies = false
+  }
+
 
   restrictions {
     geo_restriction {

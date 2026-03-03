@@ -3,7 +3,7 @@ resource "aws_lb" "s3_app_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.load_balancer.id]
-  subnets            = data.aws_subnets.selected.ids
+  subnets            = aws_subnet.public_subnets[*].id
 
   enable_deletion_protection = false
 
@@ -24,7 +24,7 @@ resource "aws_lb_target_group" "s3_app_tg" {
   name_prefix          = "s3tg-"
   port                 = 3000
   protocol             = "HTTP"
-  vpc_id               = data.aws_vpc.default.id
+  vpc_id               = aws_vpc.main.id
   deregistration_delay = 10
 
   health_check {

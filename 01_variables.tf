@@ -10,6 +10,17 @@ variable "zones" {
   default     = ["ap-south-1b", "ap-south-1a"]
 }
 
+variable "vpc_cidr_block" {
+  description = "VPC CIDR block"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "enable_nat_gw" {
+  description = "Enable NAT Gateway for private subnets"
+  type        = bool
+  default     = true
+}
 
 variable "project_name" {
   description = "Project name"

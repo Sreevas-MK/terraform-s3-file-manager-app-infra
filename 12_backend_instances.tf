@@ -40,7 +40,7 @@ resource "aws_autoscaling_group" "backend_instance_autoscaling_group" {
   desired_capacity          = 2
   health_check_grace_period = 300
   health_check_type         = "ELB"
-  vpc_zone_identifier       = data.aws_subnets.selected.ids
+  vpc_zone_identifier       = aws_subnet.private_subnets[*].id
   target_group_arns         = [aws_lb_target_group.s3_app_tg.arn]
 
   tag {
@@ -51,7 +51,7 @@ resource "aws_autoscaling_group" "backend_instance_autoscaling_group" {
 
   launch_template {
     id      = aws_launch_template.backend_instance_template.id
-    version = "$Latest"
+    version = aws_launch_template.backend_instance_template.latest_version
   }
 
   instance_refresh {

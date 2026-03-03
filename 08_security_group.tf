@@ -2,7 +2,7 @@
 
 resource "aws_security_group" "load_balancer" {
 
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = aws_vpc.main.id
   name        = "${var.project_name}-${var.project_env}-loadbalancer"
   description = "${var.project_name}-${var.project_env}-loadbalancer"
 
@@ -35,7 +35,7 @@ resource "aws_security_group" "load_balancer" {
 
 resource "aws_security_group" "backend" {
 
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = aws_vpc.main.id
   name        = "${var.project_name}-${var.project_env}-backend"
   description = "${var.project_name}-${var.project_env}-backend"
 
