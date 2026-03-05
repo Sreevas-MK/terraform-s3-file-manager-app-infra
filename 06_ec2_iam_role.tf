@@ -1,5 +1,5 @@
-resource "aws_iam_role" "ec2_s3_iam_role" {
-  name = "${var.project_name}-ec2_s3_iam_role"
+resource "aws_iam_role" "ec2_iam_role" {
+  name = "${var.project_name}-ec2_iam_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

@@ -40,11 +40,18 @@ variable "project_owner" {
   default     = "Sreevas"
 }
 
-variable "bucket_name" {
+variable "app_bucket_name" {
   description = "S3 bucket name"
   type        = string
   default     = "sreevas-s3-node-app-2026"
 }
+
+variable "s3_code_bucket" {
+  description = "S3 bucket for Code-deploy"
+  type        = string
+  default     = "sreevas-s3-node-app-code-2026"
+}
+
 
 variable "route53_hosted_zone_arn" {
   description = "route53_hosted_zone_arns"
@@ -85,4 +92,16 @@ variable "log_groups" {
 
 variable "my_ip_cidr" {
   default = "200.69.21.162/32"
+}
+
+variable "github_username" {
+  description = "Github username - application code"
+  type        = string
+  default     = "Sreevas-MK"
+}
+
+variable "github_code_repo" {
+  description = "Github repo - application code"
+  type        = string
+  default     = "s3node-app-with-versioning"
 }

@@ -1,7 +1,6 @@
 # S3 bucket for Node application
-
 resource "aws_s3_bucket" "s3_node_app" {
-  bucket        = var.bucket_name
+  bucket        = var.app_bucket_name
   force_destroy = true
 
   tags = {
@@ -20,7 +19,6 @@ resource "aws_s3_bucket_versioning" "s3_node_app_versioning" {
 
 
 # S3 bucket to collect Application load balancer logs
-
 resource "aws_s3_bucket" "alb_logs" {
   bucket        = "sreevas-alb-access-logs-2026"
   force_destroy = true
@@ -45,6 +43,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "alb_logs_lifecycle" {
   }
 }
 
+# S3 bucket for cloudfront logs
 resource "aws_s3_bucket" "cloudfront_logs" {
   bucket        = "sreevas-cloudfront-logs-2026"
   force_destroy = true
@@ -69,7 +68,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudfront_logs_lifecycle" {
   }
 }
 
-
 resource "aws_s3_bucket_ownership_controls" "cloudfront_logs_oc" {
   bucket = aws_s3_bucket.cloudfront_logs.id
   rule {
@@ -84,3 +82,15 @@ resource "aws_s3_bucket_acl" "cloudfront_logs_acl" {
   acl    = "log-delivery-write"
 }
 
+
+# S3 bucket for code deploy
+resource "aws_s3_bucket" "application_code" {
+  bucket        = var.s3_code_bucket
+  force_destroy = true
+
+  tags = {
+    Name        = "${var.project_name}-"
+    Project     = var.project_name
+    Environment = var.project_env
+  }
+}

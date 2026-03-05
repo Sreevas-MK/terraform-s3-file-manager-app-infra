@@ -1,6 +1,6 @@
 resource "aws_iam_instance_profile" "ec2_instance_profile" {
   name = "${var.project_name}-${var.project_env}-instance-profile"
-  role = aws_iam_role.ec2_s3_iam_role.name
+  role = aws_iam_role.ec2_iam_role.name
 }
 
 resource "aws_launch_template" "backend_instance_template" {
@@ -18,7 +18,10 @@ resource "aws_launch_template" "backend_instance_template" {
 
   vpc_security_group_ids = [aws_security_group.backend.id]
 
-  user_data = base64encode(file("./files/setup.sh"))
+  user_data = base64encode(templatefile("${path.module}/files/setup.sh", {
+    aws_region      = var.aws_region
+    app_bucket_name = var.app_bucket_name
+  }))
 
   tag_specifications {
     resource_type = "instance"
