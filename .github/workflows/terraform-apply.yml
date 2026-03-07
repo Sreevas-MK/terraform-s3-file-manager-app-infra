@@ -50,6 +50,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.S3_APP_CODE_REPO_ACCESS }} # Personal access token
         run: |
-          gh workflow run deploy.yml \
+          gh workflow run code-deploy.yml \
             --repo ${{ vars.CODE_REPO_USERNAME }}/${{ vars.CODE_REPO }} \
             --ref main
