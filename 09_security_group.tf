@@ -19,7 +19,7 @@ resource "aws_security_group" "load_balancer" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    prefix_list_ids = ["pl-9aa247f3"] # CloudFront managed prefix list
+    prefix_list_ids = [data.aws_ec2_managed_prefix_list.cloudfront.id] # CloudFront managed prefix list
   }
 
 

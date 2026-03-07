@@ -17,6 +17,24 @@ resource "aws_s3_bucket_versioning" "s3_node_app_versioning" {
   }
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "s3_node_app_encryption" {
+  bucket = aws_s3_bucket.s3_node_app.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "s3_node_app_block" {
+  bucket = aws_s3_bucket.s3_node_app.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
 
 # S3 bucket to collect Application load balancer logs
 resource "aws_s3_bucket" "alb_logs" {
@@ -41,6 +59,25 @@ resource "aws_s3_bucket_lifecycle_configuration" "alb_logs_lifecycle" {
       days = 1
     }
   }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "alb_logs_encrypt" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "alb_logs_block" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 # S3 bucket for cloudfront logs
@@ -82,6 +119,24 @@ resource "aws_s3_bucket_acl" "cloudfront_logs_acl" {
   acl    = "log-delivery-write"
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "cloudfront_logs_encrypt" {
+  bucket = aws_s3_bucket.cloudfront_logs.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "cloudfront_logs_block" {
+  bucket = aws_s3_bucket.cloudfront_logs.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
 
 # S3 bucket for code deploy
 resource "aws_s3_bucket" "application_code" {
@@ -93,4 +148,23 @@ resource "aws_s3_bucket" "application_code" {
     Project     = var.project_name
     Environment = var.project_env
   }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "code_bucket_encrypt" {
+  bucket = aws_s3_bucket.application_code.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "code_bucket_block" {
+  bucket = aws_s3_bucket.application_code.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }

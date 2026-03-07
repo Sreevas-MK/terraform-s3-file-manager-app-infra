@@ -29,3 +29,11 @@ data "aws_ami" "amazon_linux" {
 }
 
 data "aws_elb_service_account" "main" {}
+
+data "aws_ec2_managed_prefix_list" "cloudfront" {
+  name = "com.amazonaws.global.cloudfront.origin-facing"
+}
+
+data "aws_iam_openid_connect_provider" "github" {
+  url = "https://token.actions.githubusercontent.com"
+}

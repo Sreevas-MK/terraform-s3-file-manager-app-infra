@@ -1,17 +1,5 @@
-data "tls_certificate" "github" {
-  url = "https://token.actions.githubusercontent.com/.well-known/openid-configuration"
-}
-
-resource "aws_iam_openid_connect_provider" "github" {
-  url            = "https://token.actions.githubusercontent.com"
-  client_id_list = ["sts.amazonaws.com"]
-  # This pulls the actual thumbprint from the live certificate
-  thumbprint_list = [data.tls_certificate.github.certificates[0].sha1_fingerprint]
-}
-
-
 resource "aws_iam_policy" "github_deploy_policy" {
-  name        = "GitHubActionsWorkflowPolicy"
+  name        = "GitHubActionsCodeDeployPolicy"
   description = "Policy for GitHub Actions to deploy codes"
 
   policy = jsonencode({
@@ -54,7 +42,7 @@ resource "aws_iam_role" "github_code_deploy_role" {
       {
         Effect = "Allow"
         Principal = {
-          Federated = aws_iam_openid_connect_provider.github.arn
+          Federated = data.aws_iam_openid_connect_provider.github.arn
         }
         Action = "sts:AssumeRoleWithWebIdentity"
 
