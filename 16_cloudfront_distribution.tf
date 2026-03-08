@@ -6,6 +6,8 @@ resource "aws_cloudfront_distribution" "cdn" {
 
   aliases = [var.application_host]
 
+  web_acl_id = aws_wafv2_web_acl.cloudfront_waf.arn
+
   origin {
     domain_name = aws_lb.s3_app_alb.dns_name
     origin_id   = "alb-origin"
@@ -56,4 +58,63 @@ resource "aws_cloudfront_distribution" "cdn" {
   depends_on = [
     aws_acm_certificate_validation.cloudfront_cert_validation
   ]
+}
+
+
+# Creates a WAFv2 Web ACL resource.
+
+resource "aws_wafv2_web_acl" "cloudfront_waf" {
+  provider = aws.us_east_1 # Must be us-east-1 for CloudFront
+  name     = "${var.project_name}-cloudfront-waf"
+  scope    = "CLOUDFRONT"
+
+  default_action {
+    allow {}
+  }
+
+  # RULE 1: Rate Limiting
+  rule {
+    name     = "RateLimit"
+    priority = 1
+    action {
+      block {}
+    }
+    statement {
+      rate_based_statement {
+        limit              = 1000 # Max 1000 requests per 5 mins per IP
+        aggregate_key_type = "IP"
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "WAFRateLimit"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  # RULE 2: AWS Managed Common Rules (SQLi, XSS, etc.)
+  rule {
+    name     = "AWSManagedRulesCommon"
+    priority = 2
+    override_action {
+      none {}
+    }
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedCommon"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "CloudFrontWAF"
+    sampled_requests_enabled   = true
+  }
 }

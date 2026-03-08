@@ -35,10 +35,11 @@ resource "aws_launch_template" "backend_instance_template" {
   }
 }
 
+
 resource "aws_autoscaling_group" "backend_instance_autoscaling_group" {
 
   name                      = "${var.project_name}-${var.project_env}"
-  max_size                  = 2
+  max_size                  = 4
   min_size                  = 1
   desired_capacity          = 2
   health_check_grace_period = 300
@@ -63,6 +64,42 @@ resource "aws_autoscaling_group" "backend_instance_autoscaling_group" {
       min_healthy_percentage = 50
       instance_warmup        = 120
     }
+  }
+}
+
+resource "aws_autoscaling_policy" "cpu_target" {
+  name                   = "cpu-target-tracking"
+  autoscaling_group_name = aws_autoscaling_group.backend_instance_autoscaling_group.name
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 75.0
+  }
+}
+
+# 3. Memory Scaling Policy (Uses the CloudWatch Agent data)
+resource "aws_autoscaling_policy" "mem_target" {
+  name                   = "mem-target-tracking"
+  autoscaling_group_name = aws_autoscaling_group.backend_instance_autoscaling_group.name
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    customized_metric_specification {
+      metric_name = "mem_used_percent"
+      namespace   = "CWAgent"
+      statistic   = "Average"
+      unit        = "Percent"
+
+      metric_dimension {
+        name  = "AutoScalingGroupName"
+        value = aws_autoscaling_group.backend_instance_autoscaling_group.name
+      }
+    }
+
+    target_value = 75.0
   }
 }
 

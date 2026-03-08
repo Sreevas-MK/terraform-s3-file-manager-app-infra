@@ -41,6 +41,20 @@ dnf install amazon-cloudwatch-agent -y
 
 sudo tee /opt/aws/amazon-cloudwatch-agent/bin/config.json <<EOF
 {
+  "metrics": {
+    "metrics_collected": {
+      "mem": {
+        "measurement": [
+          "mem_used_percent"
+        ],
+        "metrics_collection_interval": 60
+      }
+    },
+    "append_dimensions": {
+      "AutoScalingGroupName": "$${aws:AutoScalingGroupName}"
+    }
+  },
+
   "logs": {
     "logs_collected": {
       "files": {
