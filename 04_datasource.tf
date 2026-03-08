@@ -13,6 +13,7 @@ data "aws_route53_zone" "my_domain" {
   private_zone = false
 }
 
+# AMI for backend instances
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
@@ -30,10 +31,49 @@ data "aws_ami" "amazon_linux" {
 
 data "aws_elb_service_account" "main" {}
 
+
 data "aws_ec2_managed_prefix_list" "cloudfront" {
   name = "com.amazonaws.global.cloudfront.origin-facing"
 }
 
+
 data "aws_iam_openid_connect_provider" "github" {
   url = "https://token.actions.githubusercontent.com"
+}
+
+
+# AMI for OVPN instance
+data "aws_ami" "ubuntu_20" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+}
+
+# Data required to fetch OVPN instance details 
+data "aws_instance" "openvpn_instance" {
+  filter {
+    name   = "tag:Name"
+    values = ["OpenVPN-AS"] # This must match the 'name' variable in your module
+  }
+
+  filter {
+    name   = "instance-state-name"
+    values = ["running"]
+  }
+
+  depends_on = [module.ec2-openvpn]
+}
+
+
+data "aws_instances" "backend_instances" {
+  filter {
+    name   = "tag:aws:autoscaling:groupName"
+    values = [aws_autoscaling_group.backend_instance_autoscaling_group.name]
+  }
+
+  instance_state_names = ["running"]
 }

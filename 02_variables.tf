@@ -90,10 +90,6 @@ variable "log_groups" {
   ]
 }
 
-variable "my_ip_cidr" {
-  default = "200.69.21.162/32"
-}
-
 variable "github_username" {
   description = "Github username - application code"
   type        = string
@@ -104,4 +100,8 @@ variable "github_code_repo" {
   description = "Github repo - application code"
   type        = string
   default     = "s3node-app-with-versioning"
+}
+
+variable "my_ip_cidr" {
+  default = "103.153.105.0/24"
 }

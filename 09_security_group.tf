@@ -57,11 +57,11 @@ resource "aws_security_group" "backend" {
 
 
   ingress {
-    description     = "SSH access"
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [aws_security_group.bastion.id]
+    description = "SSH access"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${data.aws_instance.openvpn_instance.private_ip}/32"]
   }
 
 
@@ -72,31 +72,39 @@ resource "aws_security_group" "backend" {
   }
 }
 
-resource "aws_security_group" "bastion" {
-  name        = "${var.project_name}-bastion-sg"
-  description = "Security group for bastion host"
+
+resource "aws_security_group" "openvpn_sg" {
+  name        = "${var.project_name}-openvpn-sg"
+  description = "Allow VPN traffic"
   vpc_id      = aws_vpc.main.id
 
-  # SSH from your IP only
+  # Allow OpenVPN web interface
   ingress {
-    description = "SSH from my IP"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip_cidr]
+  }
+
+  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.my_ip_cidr]
   }
 
-  # Allow all outbound (internet access)
+  # Allow OpenVPN UDP port (default 1194) for VPN tunnel
+  ingress {
+    from_port   = 1194
+    to_port     = 1194
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = {
-    Name        = "${var.project_name}-bastion-sg"
-    Environment = var.project_env
-  }
 }
-
