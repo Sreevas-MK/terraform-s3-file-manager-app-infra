@@ -39,15 +39,6 @@ resource "aws_codedeploy_deployment_group" "s3_app_group" {
     deployment_type   = local.deployment_type
   }
 
-  dynamic "load_balancer_info" {
-    for_each = local.deployment_type == "BLUE_GREEN" ? [1] : []
-    content {
-      target_group_info {
-        name = aws_lb_target_group.s3_app_tg.name
-      }
-    }
-  }
-
   auto_rollback_configuration {
     enabled = true
     events  = ["DEPLOYMENT_FAILURE"]

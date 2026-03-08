@@ -10,8 +10,6 @@ on:
         options:
           - inplace-all
           - rolling
-          - bluegreen
-          - canary
       deploy_app:
         description: 'Check this to trigger App Deployment after Apply'
         required: true
