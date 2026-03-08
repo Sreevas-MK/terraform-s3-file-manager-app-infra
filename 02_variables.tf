@@ -105,3 +105,9 @@ variable "github_code_repo" {
 variable "my_ip_cidr" {
   default = "103.153.105.0/24"
 }
+
+variable "deployment_strategy" {
+  description = "Deployment strategy for CodeDeploy"
+  type        = string
+  default     = "inplace-all"
+}

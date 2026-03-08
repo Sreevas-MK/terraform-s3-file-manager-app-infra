@@ -3,6 +3,15 @@ name: "Terraform Apply (Manual)"
 on:
   workflow_dispatch:
     inputs:
+      deployment_type:
+        description: "Choose deployment strategy"
+        required: true
+        type: choice
+        options:
+          - inplace-all
+          - rolling
+          - bluegreen
+          - canary
       deploy_app:
         description: 'Check this to trigger App Deployment after Apply'
         required: true
@@ -41,8 +50,15 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Show selected deployment strategy
+        run: echo "Deployment strategy = ${{ github.event.inputs.deployment_type }}"
+
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: |
+          terraform apply \
+            -input=false \
+            -var="deployment_strategy=${{ github.event.inputs.deployment_type }}" \
+            -auto-approve
 
       - name: Trigger App Repo Deployment
         # This only runs if you checked the box when clicking "Run Workflow"

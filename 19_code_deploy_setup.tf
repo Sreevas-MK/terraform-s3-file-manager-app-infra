@@ -35,8 +35,17 @@ resource "aws_codedeploy_deployment_group" "s3_app_group" {
   deployment_config_name = "CodeDeployDefault.AllAtOnce"
 
   deployment_style {
-    deployment_option = "WITHOUT_TRAFFIC_CONTROL" # No Load Balancer needed
-    deployment_type   = "IN_PLACE"                # Updates the existing instance
+    deployment_option = local.deployment_option
+    deployment_type   = local.deployment_type
+  }
+
+  dynamic "load_balancer_info" {
+    for_each = local.deployment_type == "BLUE_GREEN" ? [1] : []
+    content {
+      target_group_info {
+        name = aws_lb_target_group.s3_app_tg.name
+      }
+    }
   }
 
   auto_rollback_configuration {
